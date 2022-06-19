@@ -406,11 +406,11 @@ fi
 #
 declare -a LDAP_ARRAY_Members_RAW           # Raw Data from ldapsearch
 declare -a LDAP_ARRAY_Members_DN            # Distinguished names extracted from LDAP_ARRAY_Members_RAW
-Print_Status_Text "STEP 1: Getting all Members from Active Directory / LDAP Group"
+Print_Status_Text "STEP 1: Getting all Members from OpenLDAP / LDAP Group"
 if [ "$b_verbose" = "true" ]; then Print_Status_Done "checking" $LIGHTCYAN; fi
 if [ "$b_verbose" = "true" ]; then
     echo
-    echo "STEP 1: Getting all Members from Active Directory / LDAP Group"
+    echo "STEP 1: Getting all Members from OpenLDAP / LDAP Group"
     echo "--------------------------------------------------------------"
     echo "Group Name SuperAdmin : $LDAP_Groupname_for_Sync"
     echo "LDAP Server ..........: $LDAP_Source_URL"
@@ -423,30 +423,30 @@ if [ LDAP_Ignore_SSL_Certificate = "false" ]; then
     # normal ldapsearch call
     if [ "$b_verbose" = "true" ]; then
         if [ "$b_showpasswords" = "true" ]; then
-            echo 'ldapsearch -x -o ldif-wrap=no -H '$LDAP_Source_URL' -D "'$LDAP_Bind_User_DN'" -w "'$LDAP_Bind_User_Password'" -b "'$LDAP_SearchBase'" "(&(objectClass=group)(cn="'$LDAP_Groupname_for_Sync'"))"'
+            echo 'ldapsearch -x -o ldif-wrap=no -H '$LDAP_Source_URL' -D "'$LDAP_Bind_User_DN'" -w "'$LDAP_Bind_User_Password'" -b "'$LDAP_SearchBase'" "(&(objectClass=groupOfNames)(cn="'$LDAP_Groupname_for_Sync'"))"'
         else
-            echo 'ldapsearch -x -o ldif-wrap=no -H '$LDAP_Source_URL' -D "'$LDAP_Bind_User_DN'" -w "***********" -b "'$LDAP_SearchBase'" "(&(objectClass=group)(cn="'$LDAP_Groupname_for_Sync'"))"'
+            echo 'ldapsearch -x -o ldif-wrap=no -H '$LDAP_Source_URL' -D "'$LDAP_Bind_User_DN'" -w "***********" -b "'$LDAP_SearchBase'" "(&(objectClass=groupOfNames)(cn="'$LDAP_Groupname_for_Sync'"))"'
         fi
     fi
     # yes, ldapsearch is called twice - first time without grep to catch the exitcode, 2. time to catch the content
-    tempvar=`ldapsearch -x -o ldif-wrap=no -H $LDAP_Source_URL -D "$LDAP_Bind_User_DN" -w "$LDAP_Bind_User_Password" -b "$LDAP_SearchBase" "(&(objectClass=group)(cn=$LDAP_Groupname_for_Sync))" o member`
+    tempvar=`ldapsearch -x -o ldif-wrap=no -H $LDAP_Source_URL -D "$LDAP_Bind_User_DN" -w "$LDAP_Bind_User_Password" -b "$LDAP_SearchBase" "(&(objectClass=groupOfNames)(cn=$LDAP_Groupname_for_Sync))" o member`
     ldapsearch_exitcode="$?"
     if [ "$b_verbose" = "true" ]; then echo "ldapsearch_exitcode: $ldapsearch_exitcode"; fi
-    tempvar=`ldapsearch -x -o ldif-wrap=no -H $LDAP_Source_URL -D "$LDAP_Bind_User_DN" -w "$LDAP_Bind_User_Password" -b "$LDAP_SearchBase" "(&(objectClass=group)(cn=$LDAP_Groupname_for_Sync))" o member | grep member:`
+    tempvar=`ldapsearch -x -o ldif-wrap=no -H $LDAP_Source_URL -D "$LDAP_Bind_User_DN" -w "$LDAP_Bind_User_Password" -b "$LDAP_SearchBase" "(&(objectClass=groupOfNames)(cn=$LDAP_Groupname_for_Sync))" o member | grep member:`
 else
     # ignore SSL ldapsearch
     if [ "$b_verbose" = "true" ]; then
         if [ "$b_showpasswords" = "true" ]; then
-            echo 'LDAPTLS_REQCERT=never ldapsearch -x -o ldif-wrap=no -H '$LDAP_Source_URL' -D "'$LDAP_Bind_User_DN'" -w "'$LDAP_Bind_User_Password'" -b "'$LDAP_SearchBase'" "(&(objectClass=group)(cn='$LDAP_Groupname_for_Sync'))" o member'
+            echo 'LDAPTLS_REQCERT=never ldapsearch -x -o ldif-wrap=no -H '$LDAP_Source_URL' -D "'$LDAP_Bind_User_DN'" -w "'$LDAP_Bind_User_Password'" -b "'$LDAP_SearchBase'" "(&(objectClass=groupOfNames)(cn='$LDAP_Groupname_for_Sync'))" o member'
         else
-            echo 'LDAPTLS_REQCERT=never ldapsearch -x -o ldif-wrap=no -H '$LDAP_Source_URL' -D "'$LDAP_Bind_User_DN'" -w "***********" -b "'$LDAP_SearchBase'" "(&(objectClass=group)(cn='$LDAP_Groupname_for_Sync'))" o member'
+            echo 'LDAPTLS_REQCERT=never ldapsearch -x -o ldif-wrap=no -H '$LDAP_Source_URL' -D "'$LDAP_Bind_User_DN'" -w "***********" -b "'$LDAP_SearchBase'" "(&(objectClass=groupOfNames)(cn='$LDAP_Groupname_for_Sync'))" o member'
         fi
     fi
     # yes, ldapsearch is called twice - first time without grep to catch the exitcode, 2. time to catch the content
-    tempvar=`LDAPTLS_REQCERT=never ldapsearch -x -o ldif-wrap=no -H $LDAP_Source_URL -D "$LDAP_Bind_User_DN" -w "$LDAP_Bind_User_Password" -b "$LDAP_SearchBase" "(&(objectClass=group)(cn=$LDAP_Groupname_for_Sync))" o member`
+    tempvar=`LDAPTLS_REQCERT=never ldapsearch -x -o ldif-wrap=no -H $LDAP_Source_URL -D "$LDAP_Bind_User_DN" -w "$LDAP_Bind_User_Password" -b "$LDAP_SearchBase" "(&(objectClass=groupOfNames)(cn=$LDAP_Groupname_for_Sync))" o member`
     ldapsearch_exitcode="$?"
     if [ "$b_verbose" = "true" ]; then echo "ldapsearch_exitcode: $ldapsearch_exitcode"; fi
-    tempvar=`LDAPTLS_REQCERT=never ldapsearch -x -o ldif-wrap=no -H $LDAP_Source_URL -D "$LDAP_Bind_User_DN" -w "$LDAP_Bind_User_Password" -b "$LDAP_SearchBase" "(&(objectClass=group)(cn=$LDAP_Groupname_for_Sync))" o member | grep member:`
+    tempvar=`LDAPTLS_REQCERT=never ldapsearch -x -o ldif-wrap=no -H $LDAP_Source_URL -D "$LDAP_Bind_User_DN" -w "$LDAP_Bind_User_Password" -b "$LDAP_SearchBase" "(&(objectClass=groupOfNames)(cn=$LDAP_Groupname_for_Sync))" o member | grep member:`
 fi
 if [ "$b_verbose" = "true" ]; then 
     echo 'Result ldapsearch (with "grep member:" : '"$tempvar"
@@ -472,7 +472,7 @@ else
     Print_Error "Exitcode ldapsearch not zero: $(Translate_ldapsearch_exitcode $ldapsearch_exitcode)\nTry -v -p and test command by hand"
     exit 1
 fi
-if [ "$b_verbose" = "true" ]; then Print_Status_Text "STEP 1: Getting all Members from Active Directory / LDAP Group"; fi
+if [ "$b_verbose" = "true" ]; then Print_Status_Text "STEP 1: Getting all Members from OpenLDAP / LDAP Group"; fi
 Print_Status_Done "done" $GREEN
 if [ "$b_verbose" = "true" ]; then
     echo 'Got "Distinguished Name" for '${#LDAP_ARRAY_Members_DN[*]}' members:'
@@ -492,7 +492,7 @@ LDAP_ARRAY_Members_Givenname=()
 LDAP_ARRAY_Members_Email=()
 # Only catch the rest if there members in the group
 if [ "${#LDAP_ARRAY_Members_DN[*]}" -gt 0 ]; then
-    Print_Status_Text "Query sAMAccountName, sn, givenName and primary Email-Address"
+    Print_Status_Text "Query uid, sn, givenName and primary Email-Address"
     if [ "$b_verbose" = "true" ]; then Print_Status_Done "checking" $LIGHTCYAN; fi
     # Maybe a User have no Surname, Givenname and/or Email - but the will be always a sAMAccountName
     # the checks are used for testing this. Set to false for the first run of the loop
@@ -530,11 +530,11 @@ if [ "${#LDAP_ARRAY_Members_DN[*]}" -gt 0 ]; then
                 fi
                 printf '" -b "'
                 printf "${LDAP_ARRAY_Members_DN[$i]}"
-                printf '" o sAMAccountName o sn o givenName o mail | grep "^sn: \|^givenName: \|^sAMAccountName: \|^mail:" | sed '
+                printf '" o uid o sn o givenName o mail | grep "^sn: \|^givenName: \|^uid: \|^mail:" | sed '
                 echo "'s/$/|/' | sed 's/: /|/'"
             fi
             # sed replace all ": " and "new line" to "|"
-            tempvar=`ldapsearch -x -o ldif-wrap=no -H $LDAP_Source_URL -D "$LDAP_Bind_User_DN" -w "$LDAP_Bind_User_Password" -b "${LDAP_ARRAY_Members_DN[$i]}" o sAMAccountName o sn o givenName o mail | grep "^sn: \|^givenName: \|^sAMAccountName: \|^mail:" | sed 's/$/|/' | sed 's/: /|/'`
+            tempvar=`ldapsearch -x -o ldif-wrap=no -H $LDAP_Source_URL -D "$LDAP_Bind_User_DN" -w "$LDAP_Bind_User_Password" -b "${LDAP_ARRAY_Members_DN[$i]}" o uid o sn o givenName o mail | grep "^sn: \|^givenName: \|^uid: \|^mail:" | sed 's/$/|/' | sed 's/: /|/'`
         else
             if [ "$b_verbose" = "true" ]; then
                 printf "LDAPTLS_REQCERT=never ldapsearch -x -o ldif-wrap=no -H "
@@ -550,11 +550,11 @@ if [ "${#LDAP_ARRAY_Members_DN[*]}" -gt 0 ]; then
                 fi
                 printf '" -b "'
                 printf "${LDAP_ARRAY_Members_DN[$i]}"
-                printf '" o sAMAccountName o sn o givenName o mail | grep "^sn: \|^givenName: \|^sAMAccountName: \|^mail:" | sed '
+                printf '" o uid o sn o givenName o mail | grep "^sn: \|^givenName: \|^uid: \|^mail:" | sed '
                 echo "'s/$/|/' | sed 's/: /|/'"
             fi
             # sed replace all ": " and "new line" to "|"
-            tempvar=`LDAPTLS_REQCERT=never ldapsearch -x -o ldif-wrap=no -H "$LDAP_Source_URL" -D "$LDAP_Bind_User_DN" -w "$LDAP_Bind_User_Password" -b "${LDAP_ARRAY_Members_DN[$i]}" o sAMAccountName o sn o givenName o mail | grep "^sn: \|^givenName: \|^sAMAccountName: \|^mail:" | sed 's/$/|/' | sed 's/: /|/'`
+            tempvar=`LDAPTLS_REQCERT=never ldapsearch -x -o ldif-wrap=no -H "$LDAP_Source_URL" -D "$LDAP_Bind_User_DN" -w "$LDAP_Bind_User_Password" -b "${LDAP_ARRAY_Members_DN[$i]}" o uid o sn o givenName o mail | grep "^sn: \|^givenName: \|^uid: \|^mail:" | sed 's/$/|/' | sed 's/: /|/'`
             if [ "$b_verbose" = "true" ]; then
                 echo $tempvar
             fi
@@ -570,7 +570,7 @@ if [ "${#LDAP_ARRAY_Members_DN[*]}" -gt 0 ]; then
         b_check_Email="false"
         for (( k=0; k < ${#LDAP_ARRAY_Members_RAW[*]}; k++ )); do
             # Check sAMAccountName
-            if [ "${LDAP_ARRAY_Members_RAW[$k]}" = "sAMAccountName" ]; then
+            if [ "${LDAP_ARRAY_Members_RAW[$k]}" = "uid" ]; then
                 k=$(($k + 1))
                 # echo "add SAM: ${LDAP_ARRAY_Members_RAW[$k]}"
                 LDAP_ARRAY_Members_sAMAccountName+=("${LDAP_ARRAY_Members_RAW[$k]}")
@@ -614,9 +614,9 @@ fi
 unset LDAP_ARRAY_Members_RAW
 if [ "$b_verbose" = "true" ]; then
     echo "------------------------------------------------------------------------------------------------"
-    echo "Result from STEP 1: Getting all Members from Active Directory / LDAP Group $LDAP_Groupname_for_Sync"
+    echo "Result from STEP 1: Getting all Members from OpenLDAP / LDAP Group $LDAP_Groupname_for_Sync"
     echo "----+----------------------+----------------------+----------------------+----------------------"
-    printf "%-3s | %-20s | %-20s | %-20s | %-20s" "No." "sAMAccountName" "Surname" "Givenname" "Email"
+    printf "%-3s | %-20s | %-20s | %-20s | %-20s" "No." "uid" "Surname" "Givenname" "Email"
     printf "\n"
     echo "----+----------------------+----------------------+----------------------+----------------------"
     for (( i=0; i < ${#LDAP_ARRAY_Members_sAMAccountName[*]}; i++ )); do
@@ -875,7 +875,7 @@ if [ "$b_Must_Sync_Users" = "false" ]; then
     # make Compare case insensitive, save original settings
     orig_nocasematch=$(shopt -p nocasematch)
     shopt -s nocasematch
-    Print_Status_Text "Check 2: Compare Active Directory sAMAccountName with Zabbix Alias"
+    Print_Status_Text "Check 2: Compare OpenLDAP uid with Zabbix Alias"
     if [ "$b_verbose" = "true" ]; then Print_Status_Done "checking" $LIGHTCYAN; fi
     # Check every sAMAccountName and find a alias for it
     for (( i=0; i < ${#LDAP_ARRAY_Members_sAMAccountName[*]}; i++ )); do
@@ -892,7 +892,7 @@ if [ "$b_Must_Sync_Users" = "false" ]; then
         if [ "$b_alias_was_found" = "false" ]; then
             b_Must_Sync_Users="true"
             Print_Verbose_Text "${LDAP_ARRAY_Members_sAMAccountName[$i]}" "not found"
-            if [ "$b_verbose" = "true" ]; then Print_Status_Text "Check 2: Compare Active Directory sAMAccountName with Zabbix Alias"; fi
+            if [ "$b_verbose" = "true" ]; then Print_Status_Text "Check 2: Compare OpenLDAP uid with Zabbix Alias"; fi
             Print_Status_Done "mismatch" $RED
             # one user was not found, we can exit the test, we must sync
             break
@@ -900,7 +900,7 @@ if [ "$b_Must_Sync_Users" = "false" ]; then
     done
     # restore original case sensitive/insenstive settings
     $orig_nocasematch
-    if [ "$b_verbose" = "true" ]; then Print_Status_Text "Check 2: Compare Active Directory sAMAccountName with Zabbix Alias"; fi
+    if [ "$b_verbose" = "true" ]; then Print_Status_Text "Check 2: Compare OpenLDAP uid with Zabbix Alias"; fi
     if [ "$b_Must_Sync_Users" = "false" ]; then Print_Status_Done "done" $GREEN; fi
 fi
 
@@ -1170,7 +1170,7 @@ if [ "$b_Must_Sync_Users" = "true" ]; then
             echo "-------------------------------------------------------------------------------------------------------------"
             echo "Result from STEP 6: Create needed new Zabbix-User"
             echo "----+----------------------+----------------------+----------------------+--------------------------+-----------------"
-            printf "%-3s | %-20s | %-20s | %-20s | %-24s | %-20s" "No." "sAMAccountName" "Surname" "Givenname" "Zabbix-UserId" "Email-Address"
+            printf "%-3s | %-20s | %-20s | %-20s | %-24s | %-20s" "No." "uid" "Surname" "Givenname" "Zabbix-UserId" "Email-Address"
             printf "\n"
             echo "----+----------------------+----------------------+----------------------+--------------------------+-----------------"
             for (( i=0; i < ${#LDAP_ARRAY_Members_sAMAccountName[*]}; i++ )); do
