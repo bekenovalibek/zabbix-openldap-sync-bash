@@ -1,3 +1,6 @@
+# Starting by Zabbix v6.4 already have sync users from LDAP. Now no need any scripts. Staying this repo just for story :)
+[https://www.zabbix.com/whats_new_6_4](https://www.zabbix.com/whats_new_6_4#jit)
+
 # zabbix-ldap-sync-bash
 This is a pure bash-script for syncing a Actice-Directory Group via LDAP with a Zabbix-Group
 
